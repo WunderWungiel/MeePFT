@@ -9,6 +9,7 @@ import lib.tui as tui
 blue = '\033[96m'
 red = '\033[31m'
 reset = '\033[0m'
+bold = '\033[1m'
 green = '\033[32m'
 blink = '\033[5m'
 yellow = '\033[33m'
@@ -35,8 +36,9 @@ class Options_Actions():
 
     def start_server(self):
         httpd = socketserver.TCPServer(("", self.port), quietServer)
-        print(f" HTTP server working on port {cyan}'{self.port}'{reset}")
+        tui.rprint(f" HTTP server working on port {cyan}'{self.port}'{reset}")
         tui.rprint(f" Visit {self.ip_address}:{self.port} in browser.")
+        tui.rprint(f" Press Ctrl + C to stop...")
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
@@ -49,7 +51,7 @@ class Options_Actions():
         port = self.port
         while True:
             tui.frame(text="Change port")
-            print(f" Current port: {cyan}'{port}'{reset}.")
+            tui.rprint(f" Current port: {cyan}'{port}'{reset}.")
             tui.rprint(f" Input new port or press Enter to keep current: ", _end='')
 
             answer = input()
@@ -68,21 +70,19 @@ class Options_Actions():
         tui.press_enter()
 
     def about(self):
-        tui.clean()
 
-        print("\n ╭──────────────────────────────────────╮")
-        print(" │                                      │")
-        print(" │      MeePFT© 2023 WunderWungiel      │")
-        print(" │            Version: 0.0.1            │")
-        print(" │                                      │")
-        print(" │      A simple Python HTTP wrapper    │")
-        print(" │      written using Python 3.         │")
-        print(" │                                      │")
-        print(" │      Join our Telegram group:        │")
-        print(" │                                      │")
-        print(" │    https://t.me/linuxmobile_world    │")
-        print(" │                                      │")
-        print(" ╰──────────────────────────────────────╯ \n")
+        tui.frame(
+            f"""{cyan}MeePFT{reset}© 2023 WunderWungiel
+Version: {bold}0.0.1{reset}
+
+A simple Python HTTP wrapper
+written using Python 3.
+
+Join our Telegram group:
+
+https://t.me/linuxmobile_world""",
+            second_frame=True
+        )
 
         tui.press_enter()
         tui.clean()
