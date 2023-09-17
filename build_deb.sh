@@ -57,7 +57,7 @@ EOF
 cat > opt/MeePFT/config <<EOF
 [meepft]
 port = 8000
-dir = /home
+dir = /
 EOF
 
 cp ../res/icon80.png usr/share/icons/hicolor/80x80/apps/MeePFT80.png
@@ -115,6 +115,8 @@ cd ..
 
 filename="$package"_"$version"_"$arch".deb
 dpkg-deb -b --root-owner-group -Zgzip tmp/ $filename > /dev/null
+
+ar r "$filename" _aegis
 
 rm -rf tmp
 

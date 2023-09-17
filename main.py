@@ -6,9 +6,10 @@ import socketserver
 import socket
 import os
 import configparser
+
 import lib.tui as tui
 
-config_dir = "./config"
+config_dir = os.path.abspath("/opt/MeePFT/config")
 
 config = configparser.ConfigParser()
 config.read(config_dir)
@@ -52,8 +53,8 @@ class Options_Actions():
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             s.connect(("8.8.8.8", 80))
         except OSError:
-            tui.rprint(f" {red}OSError occured.{reset}")
-            tui.rprint(" Network may be unreachable. Check your Wi-Fi connection.")
+            print(f" {red}OSError occured.{reset}")
+            print(" Network may be unreachable. Check your Wi-Fi connection.")
             input(f" {cyan}Press any key to Exit...{reset}")
             sys.exit(0)
         return s.getsockname()[0]
@@ -62,19 +63,19 @@ class Options_Actions():
 
         os.chdir(self.dir)
         httpd = socketserver.TCPServer(("", self.port), quietServer)
-        tui.rprint(f" HTTP server working on port {cyan}'{self.port}'{reset}")
-        tui.rprint(f" Visit {self.ip_address}:{self.port} in browser.")
-        tui.rprint(f" Press Ctrl + C to stop...")
+        print(f" HTTP server working on port {cyan}'{self.port}'{reset}")
+        print(f" Visit {self.ip_address}:{self.port} in browser.")
+        print(f" Press Ctrl + C to stop...")
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
-            tui.rprint(f" Stopping server...")
+            print(f" Stopping server...")
             httpd.shutdown()
             httpd.server_close()
             tui.press_enter()
         except OSError:
-            tui.rprint(f" {red}OSError occured.{reset}")
-            tui.rprint(f" Network may be unreachable or port in use.")
+            print(f" {red}OSError occured.{reset}")
+            print(f" Network may be unreachable or port in use.")
             input(f" {cyan}Press any key to Exit...{reset}")
             return
 
@@ -82,8 +83,8 @@ class Options_Actions():
         port = self.port
         while True:
             tui.frame(text="Change port")
-            tui.rprint(f" Current port: {cyan}'{port}'{reset}.")
-            tui.rprint(f" Input new port or press Enter to keep current: ", _end='')
+            print(f" Current port: {cyan}'{port}'{reset}.")
+            print(f" Input new port or press Enter to keep current: ", end='')
 
             answer = input()
 
@@ -91,7 +92,7 @@ class Options_Actions():
                 answer = self.port
                 break
             if not answer.isnumeric() or not len(answer) == 4:
-                tui.rprint(f"{red} Port should be an 4-digits long integer...{reset}")
+                print(f"{red} Port should be an 4-digits long integer...{reset}")
                 continue
             else:
                 break
@@ -101,19 +102,20 @@ class Options_Actions():
         write_config_file()
         print(f" New port: {cyan}'{self.port}'{reset}.")
         tui.press_enter()
+        return "Changed_port"
 
     def dir_change(self):
         dir = self.dir
         tui.clean()
         while True:
             tui.frame(text="Change directory")
-            tui.rprint(f" Current directory: {cyan}'{dir}'{reset}.")
-            tui.rprint(f" Input new directory or press Enter to keep current: ", _end='')
+            print(f" Current directory: {cyan}'{dir}'{reset}.")
+            print(f" Input new directory or press Enter to keep current: ", end='')
 
             answer = input()
 
             if not os.path.isdir(answer):
-                tui.rprint(f"{red} Directory doesn't exist...    {reset}", time=0.03)
+                print(f"{red} Directory doesn't exist...    {reset}", time=0.03)
                 continue
             else:
                 break
@@ -168,6 +170,8 @@ def main():
 
     while True:
 
+        port = int(config['meepft']['port'])
+
         options_actions = Options_Actions()
 
         text = f"""Welcome to MeePFT!
@@ -182,8 +186,7 @@ def main():
             "Exit": options_actions.exit
         }
 
-        while True:
-            result = tui.menu(text=text, options=options)
+        result = tui.menu(text=text, options=options)
 
 if __name__ == "__main__":
     main()
